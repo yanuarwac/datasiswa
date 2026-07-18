@@ -40,7 +40,7 @@ const SiswaForm = ({ onSiswaAdded }) => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/siswa', data, {
+      const response = await axios.post('http://localhost:5050/api/siswa', data, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setSuccess('Data siswa berhasil ditambahkan!');

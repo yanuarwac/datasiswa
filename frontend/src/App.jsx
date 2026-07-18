@@ -10,7 +10,7 @@ function App() {
 
   const fetchSiswa = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/siswa');
+      const response = await axios.get('http://localhost:5050/api/siswa');
       setSiswaList(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -33,14 +33,14 @@ function App() {
         <h1>Portal Data Siswa</h1>
         <p>Sistem Informasi Manajemen Data Siswa Berbasis Web</p>
       </header>
-      
+
       <div className="content-grid">
         <div>
           <SiswaForm onSiswaAdded={handleSiswaAdded} />
         </div>
         <div>
           {loading ? (
-            <div style={{textAlign: 'center', padding: '2rem'}}>Memuat data...</div>
+            <div style={{ textAlign: 'center', padding: '2rem' }}>Memuat data...</div>
           ) : (
             <SiswaList siswaList={siswaList} />
           )}
