@@ -1,21 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { UserPlus } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const SiswaForm = ({ onSiswaAdded }) => {
+  const editData = location.state?.siswa || null;
+  const isEditMode = !!editData;
+
   const [formData, setFormData] = useState({
-    nis: '',
-    nama: '',
-    alamat: '',
-    kelas: 'Kelas 9',
-    jurusan: 'IPA',
-    jenisKelamin: 'Laki-laki',
-    status: 'Aktif'
+    nis: editData?.nis || '',
+    nama: editData?.nama || '',
+    alamat: editData?.alamat || '',
+    kelas: editData?.kelas || 'Kelas 9',
+    jurusan: editData?.jurusan || 'IPA',
+    jenisKelamin: editData?.jenisKelamin || 'Laki-laki',
+    status: editData?.status || 'Aktif'
   });
   const [foto, setFoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -41,16 +48,27 @@ const SiswaForm = ({ onSiswaAdded }) => {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const response = await axios.post(`${API_URL}/api/siswa`, data, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setSuccess('Data siswa berhasil ditambahkan!');
-      setFormData({
-        nis: '', nama: '', alamat: '', kelas: 'Kelas 9', jurusan: 'IPA', jenisKelamin: 'Laki-laki', status: 'Aktif'
-      });
-      setFoto(null);
-      e.target.reset(); // reset file input
-      if (onSiswaAdded) onSiswaAdded(response.data);
+      const config = {
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        }
+      };
+
+      if (isEditMode) {
+        await axios.put(`${API_URL}/api/siswa/${editData._id}`, data, config);
+        setSuccess('Data siswa berhasil diperbarui!');
+        setTimeout(() => navigate('/'), 1500); // Redirect back to view
+      } else {
+        const response = await axios.post(`${API_URL}/api/siswa`, data, config);
+        setSuccess('Data siswa berhasil ditambahkan!');
+        setFormData({
+          nis: '', nama: '', alamat: '', kelas: 'Kelas 9', jurusan: 'IPA', jenisKelamin: 'Laki-laki', status: 'Aktif'
+        });
+        setFoto(null);
+        e.target.reset(); // reset file input
+        if (onSiswaAdded) onSiswaAdded(response.data);
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Terjadi kesalahan saat menyimpan data.');
     } finally {
@@ -60,7 +78,7 @@ const SiswaForm = ({ onSiswaAdded }) => {
 
   return (
     <div className="card">
-      <h2><UserPlus size={24} /> Input Data Siswa</h2>
+      <h2><UserPlus size={24} /> {isEditMode ? 'Edit Data Siswa' : 'Input Data Siswa'}</h2>
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem' }}>{error}</div>}
       {success && <div style={{ color: 'var(--secondary-color)', marginBottom: '1rem' }}>{success}</div>}
       <form onSubmit={handleSubmit}>

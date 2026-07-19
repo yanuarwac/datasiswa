@@ -5,9 +5,10 @@ const cors = require('cors');
 const path = require('path');
 
 const siswaRoutes = require('./routes/siswaRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5050;
 
 // Middleware
 app.use(cors());
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve static files for photos
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/siswa', siswaRoutes);
 
 // MongoDB Connection
