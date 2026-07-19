@@ -26,6 +26,12 @@ mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log('MongoDB Connected'))
 .catch(err => console.log('MongoDB connection error:', err));
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// Export app untuk Vercel Serverless Function
+module.exports = app;
+
+// Hanya jalankan app.listen jika tidak dijalankan di Vercel (untuk development lokal)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}

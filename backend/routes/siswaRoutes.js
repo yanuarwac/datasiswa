@@ -1,29 +1,32 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { v2: cloudinary } = require('cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const Siswa = require('../models/Siswa');
 const router = express.Router();
 
-// Setup Multer for file upload
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const dir = './uploads/';
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
-    cb(null, dir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Appending extension
-  }
+// Setup Cloudinary Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'data_siswa_uploads',
+    allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+  },
+});
+
 const upload = multer({ storage: storage });
 
 // POST: Tambah Siswa Baru
 router.post('/', upload.single('foto'), async (req, res) => {
   try {
     const { nis, nama, alamat, kelas, jurusan, jenisKelamin, status } = req.body;
+    // req.file.path dari Cloudinary akan berisi URL gambar asli, bukan path lokal
     const foto = req.file ? req.file.path : null;
 
     const newSiswa = new Siswa({

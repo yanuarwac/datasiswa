@@ -17,7 +17,11 @@ const SiswaList = ({ siswaList }) => {
             return (
               <div key={siswa._id} className="siswa-item">
                 <img
-                  src={siswa.foto ? `http://localhost:5050/${siswa.foto.replace(/\\/g, '/')}` : 'https://via.placeholder.com/64'}
+                  src={
+                    siswa.foto 
+                      ? (siswa.foto.startsWith('http') ? siswa.foto : `http://localhost:5050/${siswa.foto.replace(/\\/g, '/')}`) 
+                      : 'https://via.placeholder.com/64'
+                  }
                   alt={siswa.nama}
                   className="siswa-foto"
                   onError={(e) => { e.target.src = 'https://via.placeholder.com/64'; }}

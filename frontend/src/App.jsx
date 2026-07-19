@@ -8,9 +8,11 @@ function App() {
   const [siswaList, setSiswaList] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+
   const fetchSiswa = async () => {
     try {
-      const response = await axios.get('http://localhost:5050/api/siswa');
+      const response = await axios.get(`${API_URL}/api/siswa`);
       setSiswaList(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
