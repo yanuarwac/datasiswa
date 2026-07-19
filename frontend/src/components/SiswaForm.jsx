@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const SiswaForm = ({ onSiswaAdded }) => {
+  const location = useLocation();
   const editData = location.state?.siswa || null;
   const isEditMode = !!editData;
 
